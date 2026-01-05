@@ -3,17 +3,20 @@ import { IncidentCard } from './IncidentCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RESOURCE_REQUIREMENTS } from '@/types/incident';
 import { Building2, Users, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
 export function WardDashboard() {
-  const { incidents, wardResources } = useIncidents();
+  const { incidents, wards, selectedWardId, setSelectedWardId } = useIncidents();
+
+  const currentWard = wards.find(w => w.wardId === selectedWardId) || wards[0];
 
   const wardIncidents = incidents.filter(
-    (i) => i.assignedWard === 'Ward 1' && i.escalationLevel === 'WARD'
+    (i) => i.assignedWard === currentWard.wardName && i.escalationLevel === 'WARD'
   );
   const escalatedIncidents = incidents.filter(
-    (i) => i.assignedWard === 'Ward 1' && i.status === 'ESCALATED'
+    (i) => i.assignedWard === currentWard.wardName && i.status === 'ESCALATED'
   );
 
   const newCount = wardIncidents.filter((i) => i.status === 'NEW').length;
@@ -21,19 +24,31 @@ export function WardDashboard() {
   const resolvedCount = wardIncidents.filter((i) => i.status === 'RESOLVED').length;
 
   const resourcePercentage =
-    (wardResources.availableResources / wardResources.totalResources) * 100;
+    (currentWard.availableResources / currentWard.totalResources) * 100;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Building2 className="h-8 w-8 text-primary" />
           <div>
             <h1 className="text-2xl font-bold">Ward Emergency Dashboard</h1>
-            <p className="text-muted-foreground">{wardResources.wardName} Control Center</p>
+            <p className="text-muted-foreground">Control Center</p>
           </div>
         </div>
+        <Select value={selectedWardId} onValueChange={setSelectedWardId}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select Ward" />
+          </SelectTrigger>
+          <SelectContent>
+            {wards.map(ward => (
+              <SelectItem key={ward.wardId} value={ward.wardId}>
+                {ward.wardName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Stats Cards */}
@@ -47,8 +62,8 @@ export function WardDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold">{wardResources.availableResources}</span>
-              <span className="text-muted-foreground">/ {wardResources.totalResources}</span>
+              <span className="text-3xl font-bold">{currentWard.availableResources}</span>
+              <span className="text-muted-foreground">/ {currentWard.totalResources}</span>
             </div>
             <Progress value={resourcePercentage} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">

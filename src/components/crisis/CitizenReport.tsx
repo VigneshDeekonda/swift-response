@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { AlertCircle, MapPin, Send } from 'lucide-react';
 
 export function CitizenReport() {
-  const { reportIncident } = useIncidents();
+  const { reportIncident, wards, selectedWardId, setSelectedWardId } = useIncidents();
   const [incidentType, setIncidentType] = useState<IncidentType | ''>('');
   const [severity, setSeverity] = useState<Severity | ''>('');
   const [latitude, setLatitude] = useState('');
@@ -43,10 +43,11 @@ export function CitizenReport() {
       return;
     }
 
-    reportIncident(incidentType, severity, lat, lng);
+    reportIncident(incidentType, severity, lat, lng, selectedWardId);
 
+    const selectedWard = wards.find(w => w.wardId === selectedWardId);
     toast.success('Incident Reported Successfully', {
-      description: 'Your incident has been forwarded to the local ward for immediate attention.',
+      description: `Your incident has been forwarded to ${selectedWard?.wardName || 'the local ward'} for immediate attention.`,
       duration: 4000,
     });
 
@@ -78,6 +79,25 @@ export function CitizenReport() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="ward-select">Select Ward</Label>
+              <Select
+                value={selectedWardId}
+                onValueChange={setSelectedWardId}
+              >
+                <SelectTrigger id="ward-select" className="bg-card">
+                  <SelectValue placeholder="Select ward to report to" />
+                </SelectTrigger>
+                <SelectContent className="bg-card">
+                  {wards.map(ward => (
+                    <SelectItem key={ward.wardId} value={ward.wardId}>
+                      {ward.wardName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="incident-type">Incident Type</Label>
               <Select
@@ -185,7 +205,7 @@ export function CitizenReport() {
       <div className="mt-6 p-4 rounded-lg bg-primary/10 border border-primary/20">
         <h3 className="font-semibold text-sm mb-2">How it works:</h3>
         <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-          <li>Your incident report is instantly routed to Ward 1</li>
+          <li>Your incident report is instantly routed to the selected ward</li>
           <li>Ward authorities assess and allocate resources</li>
           <li>If resources are insufficient, the system automatically escalates to City level</li>
           <li>You'll be notified once the incident is resolved</li>

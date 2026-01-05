@@ -16,7 +16,10 @@ interface IncidentCardProps {
 }
 
 export function IncidentCard({ incident, showActions = false, isEscalatedView = false }: IncidentCardProps) {
-  const { startHandling, resolveIncident, wardResources } = useIncidents();
+  const { startHandling, resolveIncident, getWardResources, wards } = useIncidents();
+  
+  // Find the ward for this incident
+  const ward = wards.find(w => w.wardName === incident.assignedWard);
 
   const handleStartHandling = () => {
     const requiredResources = RESOURCE_REQUIREMENTS[incident.severity];
@@ -24,7 +27,7 @@ export function IncidentCard({ incident, showActions = false, isEscalatedView = 
 
     if (result.escalated) {
       toast.error('Incident Automatically Escalated', {
-        description: `Insufficient ward resources. Required: ${requiredResources}, Available: ${wardResources.availableResources}. Incident escalated to City level.`,
+        description: `Insufficient ward resources. Required: ${requiredResources}, Available: ${ward?.availableResources || 0}. Incident escalated to City level.`,
         duration: 5000,
       });
     } else if (result.success) {
