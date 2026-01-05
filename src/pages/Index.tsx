@@ -7,9 +7,10 @@ import { WardDashboard } from '@/components/crisis/WardDashboard';
 import { CityDashboard } from '@/components/crisis/CityDashboard';
 import { AnalyticsDashboard } from '@/components/crisis/AnalyticsDashboard';
 import { IncidentMap } from '@/components/crisis/IncidentMap';
-import { User, Building2, Landmark, BarChart3, Map } from 'lucide-react';
+import { WardComparison } from '@/components/crisis/WardComparison';
+import { User, Building2, Landmark, BarChart3, Map, GitCompare } from 'lucide-react';
 
-type Role = 'citizen' | 'ward' | 'city' | 'analytics' | 'map';
+type Role = 'citizen' | 'ward' | 'city' | 'compare' | 'map' | 'analytics';
 
 const Index = () => {
   const [activeRole, setActiveRole] = useState<Role>('citizen');
@@ -22,7 +23,7 @@ const Index = () => {
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeRole} onValueChange={(value) => setActiveRole(value as Role)}>
             <div className="mb-6">
-              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5 h-12">
+              <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-6 h-12">
                 <TabsTrigger
                   value="citizen"
                   className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -43,6 +44,13 @@ const Index = () => {
                 >
                   <Landmark className="h-4 w-4" />
                   <span className="hidden sm:inline">City</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="compare"
+                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <GitCompare className="h-4 w-4" />
+                  <span className="hidden sm:inline">Compare</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="map"
@@ -73,6 +81,10 @@ const Index = () => {
               <CityDashboard />
             </TabsContent>
 
+            <TabsContent value="compare" className="mt-0">
+              <WardComparison />
+            </TabsContent>
+
             <TabsContent value="map" className="mt-0">
               <IncidentMap />
             </TabsContent>
@@ -90,22 +102,19 @@ const Index = () => {
               <h3 className="font-semibold text-sm mb-3">🎬 Quick Demo Flow</h3>
               <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
                 <li>
-                  <strong>Citizen tab:</strong> Report a HIGH severity incident (requires 3 resources)
+                  <strong>Citizen tab:</strong> Select a ward and report a HIGH severity incident
                 </li>
                 <li>
-                  <strong>Ward tab:</strong> Click "Start Handling" — system has only 2 resources
+                  <strong>Ward tab:</strong> Switch wards and click "Start Handling" to trigger auto-escalation
                 </li>
                 <li>
-                  <strong>Observe:</strong> System automatically escalates to City level
+                  <strong>City tab:</strong> View escalated incidents with sound alert notification
                 </li>
                 <li>
-                  <strong>City tab:</strong> View the escalated incident with the reason displayed
+                  <strong>Compare tab:</strong> View and compare resources across all wards
                 </li>
                 <li>
-                  <strong>Map tab:</strong> Visualize incident locations with heatmap density
-                </li>
-                <li>
-                  <strong>Analytics tab:</strong> Review trends, response times, and resource utilization
+                  <strong>Map & Analytics:</strong> Visualize incidents and trends
                 </li>
               </ol>
               <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">

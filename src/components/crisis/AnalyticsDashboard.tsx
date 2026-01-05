@@ -19,7 +19,7 @@ import {
 import { TrendingUp, Clock, Users, AlertTriangle } from 'lucide-react';
 
 export function AnalyticsDashboard() {
-  const { incidents, wardResources } = useIncidents();
+  const { incidents, wards } = useIncidents();
 
   const stats = useMemo(() => {
     const total = incidents.length;
@@ -57,12 +57,22 @@ export function AnalyticsDashboard() {
   }, [incidents]);
 
   const resourceUtilization = useMemo(() => {
-    const used = wardResources.totalResources - wardResources.availableResources;
+    const totalAvailable = wards.reduce((acc, w) => acc + w.availableResources, 0);
+    const totalResources = wards.reduce((acc, w) => acc + w.totalResources, 0);
+    const used = totalResources - totalAvailable;
     return [
       { name: 'Used', value: used },
-      { name: 'Available', value: wardResources.availableResources },
+      { name: 'Available', value: totalAvailable },
     ];
-  }, [wardResources]);
+  }, [wards]);
+
+  const totalResources = useMemo(() => {
+    return wards.reduce((acc, w) => acc + w.totalResources, 0);
+  }, [wards]);
+
+  const availableResources = useMemo(() => {
+    return wards.reduce((acc, w) => acc + w.availableResources, 0);
+  }, [wards]);
 
   const COLORS = {
     type: ['hsl(200, 80%, 50%)', 'hsl(15, 90%, 55%)', 'hsl(45, 85%, 50%)', 'hsl(280, 70%, 55%)'],
@@ -134,7 +144,7 @@ export function AnalyticsDashboard() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {wardResources.availableResources}/{wardResources.totalResources}
+                  {availableResources}/{totalResources}
                 </p>
                 <p className="text-xs text-muted-foreground">Resources Available</p>
               </div>
