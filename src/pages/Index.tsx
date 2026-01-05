@@ -5,9 +5,11 @@ import { CrisisHeader } from '@/components/crisis/CrisisHeader';
 import { CitizenReport } from '@/components/crisis/CitizenReport';
 import { WardDashboard } from '@/components/crisis/WardDashboard';
 import { CityDashboard } from '@/components/crisis/CityDashboard';
-import { User, Building2, Landmark } from 'lucide-react';
+import { AnalyticsDashboard } from '@/components/crisis/AnalyticsDashboard';
+import { IncidentMap } from '@/components/crisis/IncidentMap';
+import { User, Building2, Landmark, BarChart3, Map } from 'lucide-react';
 
-type Role = 'citizen' | 'ward' | 'city';
+type Role = 'citizen' | 'ward' | 'city' | 'analytics' | 'map';
 
 const Index = () => {
   const [activeRole, setActiveRole] = useState<Role>('citizen');
@@ -20,7 +22,7 @@ const Index = () => {
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeRole} onValueChange={(value) => setActiveRole(value as Role)}>
             <div className="mb-6">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 h-12">
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5 h-12">
                 <TabsTrigger
                   value="citizen"
                   className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -42,6 +44,20 @@ const Index = () => {
                   <Landmark className="h-4 w-4" />
                   <span className="hidden sm:inline">City</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="map"
+                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Map className="h-4 w-4" />
+                  <span className="hidden sm:inline">Map</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="analytics"
+                  className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Analytics</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -55,6 +71,14 @@ const Index = () => {
 
             <TabsContent value="city" className="mt-0">
               <CityDashboard />
+            </TabsContent>
+
+            <TabsContent value="map" className="mt-0">
+              <IncidentMap />
+            </TabsContent>
+
+            <TabsContent value="analytics" className="mt-0">
+              <AnalyticsDashboard />
             </TabsContent>
           </Tabs>
         </main>
@@ -76,6 +100,12 @@ const Index = () => {
                 </li>
                 <li>
                   <strong>City tab:</strong> View the escalated incident with the reason displayed
+                </li>
+                <li>
+                  <strong>Map tab:</strong> Visualize incident locations with heatmap density
+                </li>
+                <li>
+                  <strong>Analytics tab:</strong> Review trends, response times, and resource utilization
                 </li>
               </ol>
               <p className="text-xs text-muted-foreground mt-4 pt-3 border-t">
